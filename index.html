@@ -1,0 +1,329 @@
+
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ипотека — калькулятор и справочник</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#ffffff;--accent:#1766ff;--muted:#6b7280;--glass: rgba(255,255,255,0.7)}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#eef3ff 0%,var(--bg) 100%); color:#0f172a}
+    .container{max-width:1100px;margin:32px auto;padding:24px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+    .logo{width:56px;height:56px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
+    h1{margin:0;font-size:22px}
+    p.lead{color:var(--muted);margin:6px 0 0}
+
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr} .sidebar{order:-1}}
+
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(17,24,39,0.06)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text], input[type=number], select{width:100%;padding:10px 12px;border:1px solid #e6e9ef;border-radius:8px;font-size:15px}
+    .row{display:flex;gap:12px}
+    .row > *{flex:1}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    button.secondary{background:transparent;color:var(--accent);border:1px solid rgba(23,102,255,0.15)}
+    .result{display:flex;gap:12px;flex-wrap:wrap}
+    .stat{flex:1;min-width:160px;background:linear-gradient(180deg,rgba(23,102,255,0.05),transparent);padding:12px;border-radius:8px}
+    .stat b{display:block;font-size:18px}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th, td{padding:8px;border-bottom:1px solid #eef2f7;text-align:right;font-size:13px}
+    th{background:transparent;text-align:left;color:var(--muted)}
+    .muted{color:var(--muted)}
+    footer{margin-top:20px;text-align:center;color:var(--muted);font-size:13px}
+    .faq h3{margin-top:0}
+    .tips li{margin-bottom:8px}
+    .download{margin-top:10px;display:flex;gap:8px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">ИП</div>
+      <div>
+        <h1>Ипотечный помощник</h1>
+        <p class="lead">Калькулятор платежей, амортизация, советы и сравнение кредитов — всё в одном месте.</p>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section>
+        <div class="card">
+          <h2>Калькулятор ипотеки</h2>
+          <p class="muted">Вводи сумму кредита, процент и срок — получишь ежемесячный платёж и график выплат.</p>
+
+          <div style="margin-top:12px">
+            <label for="amount">Сумма кредита (₸)</label>
+            <input id="amount" type="number" min="0" step="10000" placeholder="например 15 000 000" />
+
+            <div class="row" style="margin-top:10px">
+              <div>
+                <label for="rate">Годовая ставка (%)</label>
+                <input id="rate" type="number" min="0" step="0.01" placeholder="например 9.5" />
+              </div>
+              <div>
+                <label for="term">Срок (лет)</label>
+                <input id="term" type="number" min="1" max="50" step="1" placeholder="например 20" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+              <div>
+                <label for="down">Первоначальный взнос (₸)</label>
+                <input id="down" type="number" min="0" step="10000" placeholder="например 3 000 000" />
+              </div>
+              <div>
+                <label for="extra">Доп. платеж в мес. (₸)</label>
+                <input id="extra" type="number" min="0" step="1000" placeholder="доп. платеж для досрочки" />
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+              <button id="calc">Рассчитать</button>
+              <button id="clear" class="secondary">Сбросить</button>
+              <div style="margin-left:auto;color:var(--muted);font-size:13px">*Результаты сохраняются в браузере</div>
+            </div>
+
+            <div id="results" style="margin-top:14px;display:none">
+              <div class="result">
+                <div class="stat"><div class="muted">Ежемесячный платёж</div><b id="monthly">—</b></div>
+                <div class="stat"><div class="muted">Всего выплачено</div><b id="totalPaid">—</b></div>
+                <div class="stat"><div class="muted">Переплата (проценты)</div><b id="totalInterest">—</b></div>
+              </div>
+
+              <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+                <label class="muted" style="margin:0">Показать график</label>
+                <select id="showRows">
+                  <option value="12">Первые 12 мес.</option>
+                  <option value="60">Первые 60 мес.</option>
+                  <option value="all">Весь график</option>
+                </select>
+                <div style="margin-left:auto" class="download">
+                  <button id="downloadCsv" class="secondary">Скачать CSV</button>
+                  <button id="print" class="secondary">Печать</button>
+                </div>
+              </div>
+
+              <div style="overflow:auto;margin-top:10px;max-height:360px">
+                <table id="table">
+                  <thead>
+                    <tr><th>Месяц</th><th>Платёж</th><th>Основной долг</th><th>Проценты</th><th>Остаток</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>Что такое ипотека</h3>
+          <p class="muted">Ипотека — это долгосрочный кредит под залог недвижимости. Ключевые параметры: сумма кредита, ставка, срок и первоначальный взнос. Важно учитывать комиссии, страхование и возможность досрочных погашений.</p>
+
+          <h3 style="margin-top:12px">Советы</h3>
+          <ul class="tips muted">
+            <li>Сравнивай реальные годовые ставки (APR), а не только номинальную.</li>
+            <li>Увеличение первоначального взноса снижает ежемесячный платёж и переплату.</li>
+            <li>Дополнительные ежемесячные взносы заметно сокращают срок и проценты.</li>
+            <li>Выбирай кредит с гибкими условиями досрочного погашения.</li>
+          </ul>
+        </div>
+
+        <div class="card faq" style="margin-top:14px">
+          <h3>Частые вопросы</h3>
+          <p><strong>Как снизить ставку?</strong> — Улучшить кредитную историю, увеличить взнос, сравнить предложения банков.</p>
+          <p><strong>Нужно ли страхование?</strong> — Многие банки требуют страхование жизни или имущества.</p>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h3>Сравнение предложений</h3>
+          <p class="muted">Введите примерные параметры и используйте эту секцию как заметки при сравнении банков.</p>
+          <label for="bankName">Банк / предложение</label>
+          <input id="bankName" type="text" placeholder="Название банка" />
+          <label style="margin-top:8px">Ставка (%)</label>
+          <input id="bankRate" type="number" step="0.01" />
+          <button id="saveOffer" style="margin-top:8px">Сохранить предложение</button>
+
+          <div id="offers" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>Контакты</h3>
+          <p class="muted">Если нужно — скопируй ссылку и пришли совет для друзей.</p>
+          <p><a href="mailto:info@example.com">info@example.com</a></p>
+          <p class="muted">(Демо — форма не отправляет данные на сервер)</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      Сделано с ❤️ — ипотечный помощник. Сохраняет данные локально в вашем браузере. © 2025
+    </footer>
+  </div>
+
+  <script>
+    // Утилиты форматирования
+    function fmt(num){return Number(num).toLocaleString('ru-RU',{maximumFractionDigits:0})}
+    function fmtMoney(num){return Number(num).toLocaleString('ru-RU',{minimumFractionDigits:0,maximumFractionDigits:0}) + ' ₸'}
+    function fmtMoney2(num){return Number(num).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ₸'}
+
+    // Получаем элементы
+    const amount = document.getElementById('amount');
+    const rate = document.getElementById('rate');
+    const term = document.getElementById('term');
+    const down = document.getElementById('down');
+    const extra = document.getElementById('extra');
+    const calc = document.getElementById('calc');
+    const clear = document.getElementById('clear');
+    const results = document.getElementById('results');
+    const monthlyEl = document.getElementById('monthly');
+    const totalPaidEl = document.getElementById('totalPaid');
+    const totalInterestEl = document.getElementById('totalInterest');
+    const tableBody = document.querySelector('#table tbody');
+    const showRows = document.getElementById('showRows');
+    const downloadCsv = document.getElementById('downloadCsv');
+    const printBtn = document.getElementById('print');
+
+    // Offers
+    const bankName = document.getElementById('bankName');
+    const bankRate = document.getElementById('bankRate');
+    const saveOffer = document.getElementById('saveOffer');
+    const offersBox = document.getElementById('offers');
+
+    // Локальное хранение
+    const LS_KEY = 'mortgage_helper_v1';
+    function saveState(){
+      const state = {amount:amount.value, rate:rate.value, term:term.value, down:down.value, extra:extra.value};
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+    function loadState(){
+      const s = localStorage.getItem(LS_KEY);
+      if(!s) return;
+      try{const st=JSON.parse(s); amount.value=st.amount||''; rate.value=st.rate||''; term.value=st.term||''; down.value=st.down||''; extra.value=st.extra||'';}catch(e){}
+    }
+
+    // Offers storage
+    const OFFERS_KEY = 'mortgage_offers_v1';
+    function loadOffers(){
+      const raw = localStorage.getItem(OFFERS_KEY);
+      let list = [];
+      if(raw) try{list = JSON.parse(raw)}catch(e){}
+      renderOffers(list);
+    }
+    function renderOffers(list){
+      offersBox.innerHTML = '';
+      if(!list.length){offersBox.innerHTML = '<div class="muted">Нет сохранённых предложений</div>'; return}
+      list.forEach((o,i)=>{
+        const el = document.createElement('div');
+        el.style.padding='8px 0'; el.style.borderBottom='1px solid #f1f5f9';
+        el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${o.name}</strong><div class="muted">${o.rate}% годовых</div></div><div><button data-i="${i}" class="secondary">Удалить</button></div></div>`;
+        offersBox.appendChild(el);
+      });
+      // делегирование удаления
+      offersBox.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{
+        const idx = +e.currentTarget.dataset.i;
+        list.splice(idx,1); localStorage.setItem(OFFERS_KEY, JSON.stringify(list)); renderOffers(list);
+      }))
+    }
+
+    saveOffer.addEventListener('click', ()=>{
+      const name = bankName.value.trim(); const r = bankRate.value.trim();
+      if(!name || !r) return alert('Введите название банка и ставку');
+      let list = [];
+      try{list = JSON.parse(localStorage.getItem(OFFERS_KEY)||'[]')}catch(e){}
+      list.push({name, rate:r});
+      localStorage.setItem(OFFERS_KEY, JSON.stringify(list)); bankName.value=''; bankRate.value=''; loadOffers();
+    })
+
+    // Расчёт
+    function calcMortgage(){
+      const P = Number(amount.value) - Number(down.value||0);
+      const annualRate = Number(rate.value);
+      const years = Number(term.value);
+      const extraPay = Number(extra.value||0);
+      if(!P || isNaN(P) || P<=0) return alert('Введите корректную сумму кредита (после вычета первоначального взноса).');
+      if(!annualRate || isNaN(annualRate)) return alert('Введите корректную годовую ставку.');
+      if(!years || isNaN(years)) return alert('Введите корректный срок в годах.');
+
+      const n = years*12;
+      const r = annualRate/100/12;
+      let monthly = 0;
+      if(r===0) monthly = P / n; else monthly = P * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+      const monthlyWithExtra = monthly + extraPay;
+
+      // Формируем график амортизации
+      let balance = P;
+      const schedule = [];
+      let totalPaid = 0; let totalInterest = 0;
+      let month=1;
+      while(balance > 0.01 && month <= 1000){ // защита от бесконечного цикла
+        const interest = balance * r;
+        let principal = monthly - interest;
+        if(principal < 0) principal = 0; // на случай очень низких платежей
+        // если ежемесячный с доплатой больше остатка+interest — делаем последний платёж
+        let payment = monthlyWithExtra;
+        if(payment > balance + interest) payment = balance + interest;
+        // разделяем на проценты и основную сумму
+        const interestPart = Math.min(interest, payment);
+        const principalPart = Math.max(0, payment - interestPart);
+        balance = Math.max(0, balance - principalPart);
+
+        schedule.push({month, payment, principal:principalPart, interest:interestPart, balance});
+        totalPaid += payment; totalInterest += interestPart;
+        month++; if(month>n && balance>0){/* если срок кончился, но остался баланс — продолжаем */}
+      }
+
+      // Вывод результатов
+      monthlyEl.textContent = fmtMoney2(monthlyWithExtra);
+      totalPaidEl.textContent = fmtMoney2(totalPaid);
+      totalInterestEl.textContent = fmtMoney2(totalInterest);
+      results.style.display = 'block';
+
+      // отображение таблицы
+      function renderRows(limit){
+        tableBody.innerHTML='';
+        let rows = schedule;
+        if(limit !== 'all') rows = schedule.slice(0, Number(limit));
+        rows.forEach(rw=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="text-align:left">${rw.month}</td><td>${fmtMoney2(rw.payment)}</td><td>${fmtMoney2(rw.principal)}</td><td>${fmtMoney2(rw.interest)}</td><td>${fmtMoney2(rw.balance)}</td>`;
+          tableBody.appendChild(tr);
+        })
+      }
+      renderRows(showRows.value);
+
+      // Download CSV
+      downloadCsv.onclick = ()=>{
+        let csv = 'Месяц,Платёж,Основной долг,Проценты,Остаток\n';
+        schedule.forEach(s=>{
+          csv += `${s.month},${s.payment.toFixed(2)},${s.principal.toFixed(2)},${s.interest.toFixed(2)},${s.balance.toFixed(2)}\n`;
+        });
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'amortization.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      }
+
+      printBtn.onclick = ()=>{ window.print(); }
+
+      showRows.onchange = ()=> renderRows(showRows.value);
+
+      // сохраняем состояние
+      saveState();
+    }
+
+    calc.addEventListener('click', calcMortgage);
+    clear.addEventListener('click', ()=>{ if(confirm('Сбросить форму и удалить локальные данные?')){ localStorage.removeItem(LS_KEY); localStorage.removeItem(OFFERS_KEY); amount.value=''; rate.value=''; term.value=''; down.value=''; extra.value=''; bankName.value=''; bankRate.value=''; tableBody.innerHTML=''; results.style.display='none'; loadOffers(); } });
+
+    // Загрузка при старте
+    loadState(); loadOffers();
+
+    // Сохранять при изменениях
+    [amount,rate,term,down,extra].forEach(el=>el.addEventListener('input', saveState));
+
+  </script>
+</body>
+</html>
