@@ -1,13 +1,12 @@
-
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <h1><big><strong>Финансовые калькуляторы </strong></big></h1>
   <title>Ипотека — калькулятор и справочник</title>
-   
   <body>
   <!-- 🔹 Навигационная панель -->
-  <div class="navbar">
+   <div class="navbar">
     <a href="https://umarfaruh.github.io/budget.rk/">Доходы и расходы</a>
     <a href="https://umarfaruh.github.io/financial_management/">Налоговый калькулятор</a>
     <a href="https://umarfaruh.github.io/Expenses-calculate-your-expenses-correctly/">Накопи на мечту</a>
@@ -30,7 +29,7 @@
 
     /* 🔸 Кнопки */
     .navbar a {
-      background-color: #2563eb;
+      background-color: #050506;
       color: white;
       text-decoration: none;
       padding: 12px 40px;
@@ -41,12 +40,12 @@
 
     /* 🔸 При наведении */
     .navbar a:hover {
-      background-color: #1d4ed8;
+      background-color:  #141519;
       transform: translateY(-2px);
     }
 
     /* 🔸 Для телефона (адаптив) */
-    @media (max-width: 600px) {
+    @media (max-width: 400px) {
       .navbar {
         flex-direction: column;
         align-items: stretch;
@@ -59,7 +58,7 @@
   </style>
   </body>
   <style>
-    :root{--bg:#f4f7fb;--card:#ffffff;--accent:#1766ff;--muted:#6b7280;--glass: rgba(255,255,255,0.7)}
+    :root{--bg:#f4f7fb;--card:#ffffff;--accent:#050606;--muted:#6b7280;--glass: rgba(255,255,255,0.7)}
     *{box-sizing:border-box}
     body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#eef3ff 0%,var(--bg) 100%); color:#0f172a}
     .container{max-width:1100px;margin:32px auto;padding:24px}
@@ -204,19 +203,9 @@
 
           <div id="offers" style="margin-top:12px"></div>
         </div>
-
-        <div class="card" style="margin-top:14px">
-          <h3>Контакты</h3>
-          <p class="muted">Если нужно — скопируй ссылку и пришли совет для друзей.</p>
-          <p><a href="mailto:info@example.com">info@example.com</a></p>
-          <p class="muted">(Демо — форма не отправляет данные на сервер)</p>
-        </div>
       </aside>
     </main>
 
-    <footer>
-      Сделано с ❤️ — ипотечный помощник. Сохраняет данные локально в вашем браузере. © 2025
-    </footer>
   </div>
 
   <script>
