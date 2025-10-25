@@ -1,6 +1,9 @@
 <html lang="ru">
-    
-<head>
+    <head>
+      <h1><big><strong>Финансовые калькуляторы </strong></big></h1>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>Калькулятор ипотеки</title>
    <style>
   body {
     background: #f3f6fb;
@@ -128,6 +131,8 @@
     }
   }
 </style>
+</head>
+<body>
 
 <div class="tabs-wrap">
   <div class="tabs-container" id="tabsContainer">
@@ -135,33 +140,95 @@
     <div class="tabs-track" id="tabsTrack">
       <div class="tab">
         <h4>Доходы и рассходы</h4>
-        <a href="https://umarfaruh.github.io/budget.rk/" target="_blank">Перейти</a>
+        <a href="https://umarfaruh.github.io/budget.rk/">Перейти</a>
       </div>
       <div class="tab">
         <h4>Налоговый калькулятор</h4>
-        <a href="https://umarfaruh.github.io/financial_management/" target="_blank">Перейти</a>
+        <a href="https://umarfaruh.github.io/financial_management/">Перейти</a>
       </div>
       <div class="tab">
         <h4>Накопитель</h4>
-        <a href="https://umarfaruh.github.io/Expenses-calculate-your-expenses-correctly/" target="_blank">Перейти</a>
+        <a href="https://umarfaruh.github.io/Expenses-calculate-your-expenses-correctly/">Перейти</a>
       </div>
       <div class="tab">
         <h4>Калькулятор ипотеки</h4>
-        <a href="https://umarfaruh.github.io/mortgage/" target="_blank">Перейти</a>
+        <a href="https://umarfaruh.github.io/mortgage/">Перейти</a>
       </div>
       <div class="tab">
         <h4>Калькулятор депозита</h4>
-        <a href="https://umarfaruh.github.io/Deposit-calculator/" target="_blank">Перейти</a>
+        <a href="https://umarfaruh.github.io/Deposit-calculator/">Перейти</a>
       </div>
-        <div class="tab">
-        <h4>Калькулятор депозита2</h4>
-        <a href="https://umarfaruh.github.io/Deposit-interest-calculator/" target="_blank">Перейти</a>
+      <div class="tab">
+        <h4>Калькулятор депозита 2</h4>
+        <a href="https://umarfaruh.github.io/Deposit-interest-calculator/">Перейти</a>
       </div>
     </div>
     <button class="tabs-btn right" id="btnRight">&rarr;</button>
   </div>
 </div>
-  <style>
+
+<script>
+(function(){
+  const track = document.getElementById('tabsTrack');
+  const container = document.getElementById('tabsContainer');
+  const btnL = document.getElementById('btnLeft');
+  const btnR = document.getElementById('btnRight');
+  let pos = 0;
+  let maxScroll = 0;
+  let startX = 0, dragStart = 0, isDown = false;
+
+  function updateLimits(){
+    const trackWidth = track.scrollWidth;
+    const viewport = container.clientWidth;
+    maxScroll = Math.max(0, trackWidth - viewport);
+    pos = Math.max(-maxScroll, Math.min(0, pos));
+    track.style.transform = `translateX(${pos}px)`;
+    btnL.disabled = pos === 0;
+    btnR.disabled = Math.abs(pos) >= maxScroll;
+  }
+
+  function scrollBy(direction){
+    const step = Math.round(container.clientWidth * 0.6);
+    pos += (direction === 'left') ? step : -step;
+    pos = Math.max(-maxScroll, Math.min(0, pos));
+    track.style.transform = `translateX(${pos}px)`;
+    updateLimits();
+  }
+
+  btnL.addEventListener('click', ()=> scrollBy('left'));
+  btnR.addEventListener('click', ()=> scrollBy('right'));
+
+  track.addEventListener('pointerdown', (e)=>{
+    isDown = true;
+    startX = e.clientX;
+    dragStart = pos;
+    track.style.transition = 'none';
+    track.setPointerCapture(e.pointerId);
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if(!isDown) return;
+    const dx = e.clientX - startX;
+    pos = dragStart + dx;
+    if(pos > 80) pos = 80;
+    if(pos < -maxScroll - 80) pos = -maxScroll - 80;
+    track.style.transform = `translateX(${pos}px)`;
+  });
+  window.addEventListener('pointerup', ()=>{
+    if(!isDown) return;
+    isDown = false;
+    track.style.transition = 'transform .35s ease';
+    pos = Math.max(-maxScroll, Math.min(0, pos));
+    track.style.transform = `translateX(${pos}px)`;
+    updateLimits();
+  });
+  window.addEventListener('resize', updateLimits);
+  window.addEventListener('load', ()=> setTimeout(updateLimits, 80));
+})();
+</script>
+
+
+
+<style>
     :root{--bg:#f4f7fb;--card:#ffffff;--accent:#050606;--muted:#6b7280;--glass: rgba(255,255,255,0.7)}
     *{box-sizing:border-box}
     body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#eef3ff 0%,var(--bg) 100%); color:#0f172a}
@@ -275,6 +342,27 @@
           </div>
         </div>
 
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
         <div class="card" style="margin-top:14px">
           <h3>Что такое ипотека</h3>
           <p class="muted">Ипотека — это долгосрочный кредит под залог недвижимости. Ключевые параметры: сумма кредита, ставка, срок и первоначальный взнос. Важно учитывать комиссии, страхование и возможность досрочных погашений.</p>
@@ -286,12 +374,6 @@
             <li>Дополнительные ежемесячные взносы заметно сокращают срок и проценты.</li>
             <li>Выбирай кредит с гибкими условиями досрочного погашения.</li>
           </ul>
-        </div>
-
-        <div class="card faq" style="margin-top:14px">
-          <h3>Частые вопросы</h3>
-          <p><strong>Как снизить ставку?</strong> — Улучшить кредитную историю, увеличить взнос, сравнить предложения банков.</p>
-          <p><strong>Нужно ли страхование?</strong> — Многие банки требуют страхование жизни или имущества.</p>
         </div>
       </section>
 
